@@ -20,8 +20,15 @@ void *thread_func(void *arg) {
     int local_count = 0;
     int len2 = strlen(s2);
 
-    // Loops through the thread's chunk of s1. Only go up to (end - len2 + 1) to avoid overflow
-    for (int i = data->start; i <= data->end - len2 + 1; i++) {
+    // Calculates last index the thread should check as a start position
+    int last_i = data->end - len2 + 1;
+    int len1 = strlen(s1);
+    if (last_i > len1 - len2) {
+        last_i = len1 - len2;
+    }
+
+    // Loops through the thread's chunk of s1. Only go up to valid last start index
+    for (int i = data->start; i <= last_i; i++) {
         // Compares substring of s1 starting at i to s2
         if (strncmp(s1 + i, s2, len2) == 0) {
             local_count++;
