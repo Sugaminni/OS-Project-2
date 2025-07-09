@@ -38,15 +38,15 @@ void *thread_func(void *arg) {
 
 int main(int argc, char *argv[]) {
     // Checks number of command-line arguments
-    if (argc != 4) {
-        printf("Usage: %s <string1> <string2> <num_threads>\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s <string1> <string2>\n", argv[0]);
         return -1;
     }
 
     // Reads command-line arguments
     s1 = argv[1];
     s2 = argv[2];
-    int num_threads = atoi(argv[3]);
+    int num_threads = 10; // Hard-coded to 10 threads as required
 
     pthread_mutex_init(&count_mutex, NULL);
 
