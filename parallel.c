@@ -20,7 +20,7 @@ void *thread_func(void *arg) {
     int local_count = 0;
     int len2 = strlen(s2);
 
-    // Loop through the thread's chunk of s1. Only go up to (end - len2 + 1) to avoid overflow
+    // Loops through the thread's chunk of s1. Only go up to (end - len2 + 1) to avoid overflow
     for (int i = data->start; i <= data->end - len2 + 1; i++) {
         // Compares substring of s1 starting at i to s2
         if (strncmp(s1 + i, s2, len2) == 0) {
@@ -39,12 +39,36 @@ void *thread_func(void *arg) {
 int main(int argc, char *argv[]) {
     // Checks number of command-line arguments
     if (argc != 3) {
-        printf("Usage: %s <string1> <string2>\n", argv[0]);
+        printf("Usage: %s <filename> <string2>\n", argv[0]);
         return -1;
     }
 
-    // Reads command-line arguments
-    s1 = argv[1];
+    // Opens the file
+    FILE *fp = fopen(argv[1], "r");
+    if (fp == NULL) {
+        printf("Error opening file %s\n", argv[1]);
+        return -1;
+    }
+
+    // Determines file size
+    fseek(fp, 0, SEEK_END);
+    long file_size = ftell(fp);
+    rewind(fp);
+
+    // Allocates memory for s1
+    s1 = malloc(file_size + 1);
+    if (s1 == NULL) {
+        printf("Memory allocation failed\n");
+        fclose(fp);
+        return -1;
+    }
+
+    // Reads the entire file into s1
+    fread(s1, 1, file_size, fp);
+    s1[file_size] = '\0';
+
+    fclose(fp);
+
     s2 = argv[2];
     int num_threads = 10; // Hard-coded to 10 threads as required
 
@@ -89,5 +113,6 @@ int main(int argc, char *argv[]) {
     printf("Total occurrences: %d\n", count);
 
     pthread_mutex_destroy(&count_mutex);
+    free(s1);
     return 0;
 }
