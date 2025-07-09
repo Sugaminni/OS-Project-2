@@ -8,10 +8,11 @@ char *s2;
 int count = 0; 
 pthread_mutex_t count_mutex;
 
-// Structure for passing start and end indices to each thread
+// Structure for passing start, end indices, and thread id to each thread
 typedef struct {
     int start; 
     int end;  
+    int thread_id; // Added thread ID field
 } ThreadData;
 
 // The function executed by each thread
@@ -108,6 +109,8 @@ int main(int argc, char *argv[]) {
                 data[i].end = len1 - 1;
             }
         }
+
+        data[i].thread_id = i + 1; // Assign thread ID here
 
         // Creates thread
         pthread_create(&threads[i], NULL, thread_func, &data[i]);
